@@ -147,31 +147,6 @@ def constraint_prop(new_state, puz):
     else:
         return puz
 
-# broken method
-def find_pairs(new_state, puz):
-    changed = set()
-    puz = list(puz)
-    for x in range(N):
-        for cons in [ddrow, ddcol, ddblock]:
-            dupes = {}
-            for con_set in cons[x]:
-                if not new_state[con_set] in dupes:
-                    dupes[new_state[con_set]] = 1
-                else:
-                    dupes[new_state[con_set]] = dupes[new_state[con_set]] + 1
-                    if len(new_state[con_set]) == dupes[new_state[con_set]]:
-                        for rep in cons[x]:
-                            if not new_state[rep] == new_state[con_set]:
-                                for v in new_state[rep]:
-                                    ind = new_state[rep].find(v)
-                                    if ind > -1:
-                                        new_state[rep] = new_state[rep][:ind] + new_state[rep][ind + 1:]
-                                if len(new_state[rep]) == 1:
-                                    puz[rep] = new_state[rep]
-                                    changed.add(rep)
-    puz = ''.join(puz)
-    return forward_looking(new_state, puz, changed)
-
 
 # finds most constrained index, if tied, randomly picks
 def get_next_unassigned_var(n, p):
@@ -269,7 +244,7 @@ def solve(line):
         initialize_values(line, NN)
     puzzle_check(line)
     if args.verbose:
-        print('Inputted Puzzle:')
+        print(f'Inputted Puzzle: {line}\n')
         display_puzzle(line)
 
     create_constraint(line)
@@ -278,7 +253,7 @@ def solve(line):
     ans = algo(line)
     if ans is not None:
         if args.verbose:
-            print('Solved Puzzle:')
+            print(f'Solved Puzzle: {ans}\n')
             display_puzzle(ans)
         else:
             print(ans)
@@ -289,8 +264,8 @@ def solve(line):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sudoku Solver')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-p', metavar='PUZZLE', help="puzzle string. Fill empty slots with '.'")
-    group.add_argument('-f', '--file', help="puzzle filename. Separate puzzles with a new line")
+    group.add_argument('-p', metavar='PUZZLE', help="puzzle string, fill empty slots with '.'")
+    group.add_argument('-f', '--file', help="puzzle filename, separate puzzles with a new line")
     parser.add_argument("-v", "--verbose", action="store_true", help="pretty-prints puzzles for files", default=False)
     args = parser.parse_args()
 
